@@ -1,0 +1,175 @@
+{% comment %}
+BretLab Jersey Customizer – Product block
+{% endcomment %}
+
+<div class="jersey-customizer">
+  <h3 class="jc-title">Personaliza tu camiseta</h3>
+  <p class="jc-subtitle">Elige nombre, número y color para tu camiseta.</p>
+
+  <!-- FORMULARIO -->
+  <div class="jc-form">
+    <label>
+      Nombre del jugador
+      <input type="text" id="jc-name" placeholder="Ej: León" />
+    </label>
+
+    <label>
+      Número
+      <input type="number" id="jc-number" min="0" max="99" placeholder="10" />
+    </label>
+
+    <label>
+      Color principal
+      <input type="color" id="jc-color" value="#000000" />
+    </label>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="jc-preview">
+    <div class="jc-preview-box">
+      <img src="{{ 'jersey-base.png' | asset_url }}" alt="Jersey base" />
+
+      <div class="jc-overlay">
+        <div id="preview-name" class="jc-preview-name">JUGADOR</div>
+        <div id="preview-number" class="jc-preview-number">10</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .jersey-customizer {
+    max-width: 420px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  .jc-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .jc-subtitle {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 16px;
+  }
+
+  .jc-form label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .jc-form input {
+    width: 100%;
+    padding: 6px 8px;
+    margin-top: 4px;
+    box-sizing: border-box;
+  }
+
+  /* === PREVIEW === */
+  .jc-preview {
+    margin-top: 16px;
+  }
+
+  .jc-preview-box {
+    position: relative;
+    width: 320px;          /* controla el tamaño del render */
+    max-width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .jc-preview-box img {
+    width: 100%;
+    display: block;
+  }
+
+  /* === OVERLAY === */
+  .jc-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    text-align: center;
+  }
+
+  /* Nombre*/
+  .jc-preview-name {
+    position: absolute;
+    top: 60px;               /* sube/baja el nombre */
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 26px;         /* más grande */
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #000;
+    text-transform: uppercase;
+    line-height: 1;
+    white-space: nowrap;
+
+    text-shadow:
+      2px 2px 0 #fff,
+     -2px 2px 0 #fff,
+      2px -2px 0 #fff,
+     -2px -2px 0 #fff;
+  }
+
+  /* Número*/
+  .jc-preview-number {
+    position: absolute;
+    top: 50%;                /* centro vertical del número */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 130px;        /* SUBÍ esto si lo querés más grande */
+    font-weight: 900;
+    color: #000;
+    line-height: 0.9;
+    letter-spacing: -2px;
+
+    text-shadow:
+      3px 3px 0 #fff,
+     -3px 3px 0 #fff,
+      3px -3px 0 #fff,
+     -3px -3px 0 #fff;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const nameInput = document.getElementById("jc-name");
+    const numberInput = document.getElementById("jc-number");
+    const colorInput = document.getElementById("jc-color");
+
+    const previewName = document.getElementById("preview-name");
+    const previewNumber = document.getElementById("preview-number");
+
+    nameInput.addEventListener("input", () => {
+      previewName.textContent = (nameInput.value || "JUGADOR").toUpperCase();
+    });
+
+    numberInput.addEventListener("input", () => {
+      previewNumber.textContent = numberInput.value || "10";
+    });
+
+    colorInput.addEventListener("input", () => {
+      previewName.style.color = colorInput.value;
+      previewNumber.style.color = colorInput.value;
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Jersey Customizer",
+  "target": "section",
+  "settings": []
+}
+{% endschema %}
+
+
+
+
+
+
