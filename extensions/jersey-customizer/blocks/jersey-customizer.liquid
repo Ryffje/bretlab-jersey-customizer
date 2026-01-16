@@ -1,10 +1,51 @@
 {% comment %}
 BretLab Jersey Customizer – Product block
+Auto-detect jersey by product.handle (supports dev + live handles)
 {% endcomment %}
 
-<div class="jersey-customizer">
+{%- assign h = product.handle | downcase -%}
+
+{%- assign is_brazil = false -%}
+{%- assign is_argentina = false -%}
+
+{%- if h contains 'jersey-brasil' -%}
+  {%- assign is_brazil = true -%}
+{%- elsif h contains 'jersey-argentina' -%}
+  {%- assign is_argentina = true -%}
+{%- endif -%}
+
+{%- comment -%}
+Fallback: if product title contains keywords (in case handle is different)
+{%- endcomment -%}
+{%- if is_brazil == false and is_argentina == false -%}
+  {%- assign t = product.title | downcase -%}
+  {%- if t contains 'brasil' or t contains 'brazil' -%}
+    {%- assign is_brazil = true -%}
+  {%- elsif t contains 'argentina' -%}
+    {%- assign is_argentina = true -%}
+  {%- endif -%}
+{%- endif -%}
+
+{%- comment -%}
+Default to Argentina if still not detected (you can change to hide block if you want)
+{%- endcomment -%}
+{%- assign default_image = 'jersey-argentina.png' -%}
+{%- assign default_color = '#000000' -%}
+
+{%- if is_brazil -%}
+  {%- assign default_image = 'jersey-brasil.png' -%}
+  {%- assign default_color = '#0b6b3a' -%} 
+{%- elsif is_argentina -%}
+  {%- assign default_image = 'jersey-argentina.png' -%}
+  {%- assign default_color = '#000000' -%}
+{%- endif -%}
+
+<div class="jersey-customizer"
+     data-default-image="{{ default_image | escape }}"
+     data-default-color="{{ default_color | escape }}">
+
   <h3 class="jc-title">Personaliza tu camiseta</h3>
-  <p class="jc-subtitle">Elige nombre, número y color para tu camiseta.</p>
+  <p class="jc-subtitle">Elige nombre y número para tu camiseta.</p>
 
   <!-- FORMULARIO -->
   <div class="jc-form">
@@ -17,17 +58,17 @@ BretLab Jersey Customizer – Product block
       Número
       <input type="number" id="jc-number" min="0" max="99" placeholder="10" />
     </label>
-
-    <label>
-      Color principal
-      <input type="color" id="jc-color" value="#000000" />
-    </label>
   </div>
 
   <!-- PREVIEW -->
   <div class="jc-preview">
     <div class="jc-preview-box">
-      <img src="{{ 'jersey-base.png' | asset_url }}" alt="Jersey base" />
+      <img
+        id="jc-jersey-img"
+        src="{{ default_image | asset_url }}"
+        alt="Jersey base"
+        loading="lazy"
+      />
 
       <div class="jc-overlay">
         <div id="preview-name" class="jc-preview-name">JUGADOR</div>
@@ -70,13 +111,11 @@ BretLab Jersey Customizer – Product block
   }
 
   /* === PREVIEW === */
-  .jc-preview {
-    margin-top: 16px;
-  }
+  .jc-preview { margin-top: 16px; }
 
   .jc-preview-box {
     position: relative;
-    width: 320px;          /* controla el tamaño del render */
+    width: 320px;
     max-width: 100%;
     border-radius: 10px;
     overflow: hidden;
@@ -95,20 +134,18 @@ BretLab Jersey Customizer – Product block
     text-align: center;
   }
 
-  /* Nombre*/
   .jc-preview-name {
     position: absolute;
-    top: 60px;               /* sube/baja el nombre */
+    top: 55px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 26px;         /* más grande */
+    font-size: 22px;
     font-weight: 800;
     letter-spacing: 1px;
     color: #000;
     text-transform: uppercase;
     line-height: 1;
     white-space: nowrap;
-
     text-shadow:
       2px 2px 0 #fff,
      -2px 2px 0 #fff,
@@ -116,18 +153,16 @@ BretLab Jersey Customizer – Product block
      -2px -2px 0 #fff;
   }
 
-  /* Número*/
   .jc-preview-number {
     position: absolute;
-    top: 50%;                /* centro vertical del número */
+    top: 45%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 130px;        /* SUBÍ esto si lo querés más grande */
+    font-size: 100px;
     font-weight: 900;
     color: #000;
     line-height: 0.9;
     letter-spacing: -2px;
-
     text-shadow:
       3px 3px 0 #fff,
      -3px 3px 0 #fff,
@@ -138,12 +173,20 @@ BretLab Jersey Customizer – Product block
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
+    const root = document.querySelector(".jersey-customizer");
+    if (!root) return;
+
     const nameInput = document.getElementById("jc-name");
     const numberInput = document.getElementById("jc-number");
-    const colorInput = document.getElementById("jc-color");
 
     const previewName = document.getElementById("preview-name");
     const previewNumber = document.getElementById("preview-number");
+
+    const defaultColor = root.dataset.defaultColor || "#000000";
+
+    // aplicar color default (Argentina negro / Brasil verde musgo)
+    previewName.style.color = defaultColor;
+    previewNumber.style.color = defaultColor;
 
     nameInput.addEventListener("input", () => {
       previewName.textContent = (nameInput.value || "JUGADOR").toUpperCase();
@@ -151,11 +194,6 @@ BretLab Jersey Customizer – Product block
 
     numberInput.addEventListener("input", () => {
       previewNumber.textContent = numberInput.value || "10";
-    });
-
-    colorInput.addEventListener("input", () => {
-      previewName.style.color = colorInput.value;
-      previewNumber.style.color = colorInput.value;
     });
   });
 </script>
@@ -167,6 +205,10 @@ BretLab Jersey Customizer – Product block
   "settings": []
 }
 {% endschema %}
+
+
+
+
 
 
 
